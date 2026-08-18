@@ -13,8 +13,8 @@ interface AttemptData {
   quiz_id: string
   quiz: { title: string }
   user_answers: {
-    question: { text: string, explanation: string }
-    selected_option: { text: string, letter: string }
+    question: { text: string; explanation: string }
+    selected_option: { text: string; letter: string }
     is_correct: boolean
   }[]
 }
@@ -25,47 +25,47 @@ export default function Result() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-  const fetchResult = async () => {
-  const { data, error } = await supabase
-    .from('quiz_attempts')
-    .select(`
-      score,
-      total_questions,
-      correct_count,
-      wrong_count,
-      unanswered_count,
-      percentage,
-      time_taken,
-      quiz_id,
-      quiz:quizzes(title),
-      user_answers (
-        is_correct,
-        question:questions(text, explanation),
-        selected_option:options(text, letter)
-      )
-    `)
-    .eq('id', attemptId)
-    .single()
+    const fetchResult = async () => {
+      const { data, error } = await supabase
+        .from('quiz_attempts')
+        .select(`
+          score,
+          total_questions,
+          correct_count,
+          wrong_count,
+          unanswered_count,
+          percentage,
+          time_taken,
+          quiz_id,
+          quiz:quizzes(title),
+          user_answers (
+            is_correct,
+            question:questions(text, explanation),
+            selected_option:options(text, letter)
+          )
+        `)
+        .eq('id', attemptId)
+        .single()
 
-  if (error) {
-    console.error(error)
-    setLoading(false)
-    return
-  }
+      if (error) {
+        console.error(error)
+        setLoading(false)
+        return
+      }
 
-  // Fix: nested relations return arrays, so we need to flatten them
-  const fixedData = {
-    ...data,
-    quiz: data.quiz && data.quiz[0],  // quiz is an array, take first
-    user_answers: data.user_answers?.map((ua: any) => ({
-      ...ua,
-      question: ua.question && ua.question[0],        // question is array, take first
-      selected_option: ua.selected_option && ua.selected_option[0]  // options array, take first
-    }))
-  }
-  setData(fixedData)
-  setLoading(false)
-}
+      // Fix nested array issues
+      const fixedData = {
+        ...data,
+        quiz: data.quiz && data.quiz[0],
+        user_answers: data.user_answers?.map((ua: any) => ({
+          ...ua,
+          question: ua.question && ua.question[0],
+          selected_option: ua.selected_option && ua.selected_option[0]
+        }))
+      }
+      setData(fixedData)
+      setLoading(false)
+    }
     fetchResult()
   }, [attemptId])
 
@@ -107,14 +107,6 @@ export default function Result() {
           <div className="bg-red-50 p-4 rounded-lg text-center">
             <p className="text-2xl font-bold text-red-600">{data.wrong_count}</p>
             <p className="text-sm text-gray-500">Wrong</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg text-center">
-            <p className="text-2xl font-bold text-gray-600">{data.unanswered_count}</p>
-            <p className="text-sm text-gray-500">Unanswered</p>
-          </div>
-          <div className="bg-indigo-50 p-4 rounded-lg text-center">
-            <p className="text-2xl font-bold text-indigo-600">{formatTime(data.time_taken)}</p>
-            <p className="text-sm text-gray-500">Time Taken</p>
           </div>
         </div>
 

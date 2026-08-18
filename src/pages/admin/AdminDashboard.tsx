@@ -16,7 +16,6 @@ export default function AdminDashboard() {
         return
       }
 
-      // Check if user has admin role
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
@@ -61,7 +60,6 @@ export default function AdminDashboard() {
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
         <p className="text-gray-500 mb-6">Manage your quiz platform.</p>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {stats.map((stat, idx) => {
             const Icon = stat.icon
@@ -81,7 +79,6 @@ export default function AdminDashboard() {
           })}
         </div>
 
-        {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {actions.map((action, idx) => {
             const Icon = action.icon

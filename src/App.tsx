@@ -1,4 +1,3 @@
-import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -11,6 +10,7 @@ import Dashboard from './pages/Dashboard'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import Quiz from './pages/Quiz'
 import Result from './pages/Result'
+
 function App() {
   return (
     <BrowserRouter>
@@ -23,10 +23,10 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-	    <Route path="/dashboard" element={<Dashboard />} />
-	    <Route path="/admin" element={<AdminDashboard />} />
-	    <Route path="/quiz/:id" element={<Quiz />} />
-	    <Route path="/result/:attemptId" element={<Result />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/quiz/:id" element={<Quiz />} />
+            <Route path="/result/:attemptId" element={<Result />} />
           </Routes>
         </main>
         <Footer />

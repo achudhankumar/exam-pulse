@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, Users, BookOpen, Award, ArrowRight, Zap, TrendingUp, Clock } from 'lucide-react'
 
