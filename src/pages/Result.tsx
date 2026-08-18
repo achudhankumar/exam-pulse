@@ -53,10 +53,15 @@ export default function Result() {
     return
   }
 
-  // Fix: quiz is an array, so we take the first item
+  // Fix: nested relations return arrays, so we need to flatten them
   const fixedData = {
     ...data,
-    quiz: data.quiz && data.quiz[0]
+    quiz: data.quiz && data.quiz[0],  // quiz is an array, take first
+    user_answers: data.user_answers?.map((ua: any) => ({
+      ...ua,
+      question: ua.question && ua.question[0],        // question is array, take first
+      selected_option: ua.selected_option && ua.selected_option[0]  // options array, take first
+    }))
   }
   setData(fixedData)
   setLoading(false)

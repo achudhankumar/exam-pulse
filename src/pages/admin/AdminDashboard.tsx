@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabaseClient'
 import { Users, BookOpen, Award, Edit, PlusCircle, BarChart } from 'lucide-react'
@@ -15,7 +15,6 @@ export default function AdminDashboard() {
         navigate('/login')
         return
       }
-      setUser(user)
 
       // Check if user has admin role
       const { data: profile } = await supabase
