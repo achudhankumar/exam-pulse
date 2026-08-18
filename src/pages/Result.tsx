@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 
@@ -25,35 +25,42 @@ export default function Result() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchResult = async () => {
-      const { data, error } = await supabase
-        .from('quiz_attempts')
-        .select(`
-          score,
-          total_questions,
-          correct_count,
-          wrong_count,
-          unanswered_count,
-          percentage,
-          time_taken,
-          quiz_id,
-          quiz:quizzes(title),
-          user_answers (
-            is_correct,
-            question:questions(text, explanation),
-            selected_option:options(text, letter)
-          )
-        `)
-        .eq('id', attemptId)
-        .single()
-      if (error) {
-        console.error(error)
-        setLoading(false)
-        return
-      }
-      setData(data)
-      setLoading(false)
-    }
+  const fetchResult = async () => {
+  const { data, error } = await supabase
+    .from('quiz_attempts')
+    .select(`
+      score,
+      total_questions,
+      correct_count,
+      wrong_count,
+      unanswered_count,
+      percentage,
+      time_taken,
+      quiz_id,
+      quiz:quizzes(title),
+      user_answers (
+        is_correct,
+        question:questions(text, explanation),
+        selected_option:options(text, letter)
+      )
+    `)
+    .eq('id', attemptId)
+    .single()
+
+  if (error) {
+    console.error(error)
+    setLoading(false)
+    return
+  }
+
+  // Fix: quiz is an array, so we take the first item
+  const fixedData = {
+    ...data,
+    quiz: data.quiz && data.quiz[0]
+  }
+  setData(fixedData)
+  setLoading(false)
+}
     fetchResult()
   }, [attemptId])
 

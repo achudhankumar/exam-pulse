@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabaseClient'
 import { Users, BookOpen, Award, Edit, PlusCircle, BarChart } from 'lucide-react'
 
 export default function AdminDashboard() {
-  const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const navigate = useNavigate()
