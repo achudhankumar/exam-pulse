@@ -28,7 +28,7 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/quiz/:id" element={<Quiz />} />
             <Route path="/result/:attemptId" element={<Result />} />
-	<Route path="/leaderboard" element={<Leaderboard />} />
+	    <Route path="/leaderboard" element={<Leaderboard />} />
           </Routes>
         </main>
         <Footer />
