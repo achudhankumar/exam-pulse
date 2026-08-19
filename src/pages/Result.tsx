@@ -53,7 +53,6 @@ export default function Result() {
         return
       }
 
-      // Fix nested array issues
       const fixedData = {
         ...data,
         quiz: data.quiz && data.quiz[0],
@@ -77,13 +76,10 @@ export default function Result() {
     return <div className="min-h-screen flex items-center justify-center">Result not found.</div>
   }
 
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60)
-    const s = seconds % 60
-    return `${m}:${String(s).padStart(2, '0')}`
-  }
-
   const isPass = data.percentage >= 40
+  const minutes = Math.floor(data.time_taken / 60)
+  const seconds = data.time_taken % 60
+  const timeDisplay = `${minutes}:${String(seconds).padStart(2, '0')}`
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -107,6 +103,10 @@ export default function Result() {
           <div className="bg-red-50 p-4 rounded-lg text-center">
             <p className="text-2xl font-bold text-red-600">{data.wrong_count}</p>
             <p className="text-sm text-gray-500">Wrong</p>
+          </div>
+          <div className="bg-indigo-50 p-4 rounded-lg text-center">
+            <p className="text-2xl font-bold text-indigo-600">{timeDisplay}</p>
+            <p className="text-sm text-gray-500">Time Taken</p>
           </div>
         </div>
 
