@@ -19,6 +19,7 @@ interface Quiz {
 export default function Home() {
   const [quizzes, setQuizzes] = useState<Quiz[]>([])
   const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<any>(null)
   const [stats, setStats] = useState({
     totalQuestions: '0',
     totalQuizzes: '0',
@@ -26,59 +27,68 @@ export default function Home() {
     totalAttempts: '0'
   })
 
-  // Fetch real data
+  // Fetch user session
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+  }, [])
+
+  // Fetch data
   useEffect(() => {
     const fetchData = async () => {
-      // 1. Fetch published quizzes
-      const { data: quizData } = await supabase
-        .from('quizzes')
-        .select('*')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
+      try {
+        // 1. Fetch published quizzes
+        const { data: quizData, error: quizError } = await supabase
+          .from('quizzes')
+          .select('*')
+          .eq('status', 'published')
+          .order('created_at', { ascending: false })
 
-      if (quizData) {
-        setQuizzes(quizData)
-        setStats(prev => ({ ...prev, totalQuizzes: String(quizData.length) }))
+        if (quizError) console.error('Quiz fetch error:', quizError)
+        if (quizData) {
+          setQuizzes(quizData)
+          setStats(prev => ({ ...prev, totalQuizzes: String(quizData.length) }))
+        }
+
+        // 2. Fetch total questions count
+        const { count: qCount } = await supabase
+          .from('questions')
+          .select('*', { count: 'exact', head: true })
+        if (qCount !== null) {
+          setStats(prev => ({ ...prev, totalQuestions: String(qCount) }))
+        }
+
+        // 3. Fetch total users (profiles)
+        const { count: uCount } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+        if (uCount !== null) {
+          setStats(prev => ({ ...prev, totalUsers: String(uCount) }))
+        }
+
+        // 4. Fetch total attempts
+        const { count: aCount } = await supabase
+          .from('quiz_attempts')
+          .select('*', { count: 'exact', head: true })
+        if (aCount !== null) {
+          setStats(prev => ({ ...prev, totalAttempts: String(aCount) }))
+        }
+      } catch (err) {
+        console.error('Error fetching data:', err)
       }
-
-      // 2. Fetch total questions count
-      const { count: qCount } = await supabase
-        .from('questions')
-        .select('*', { count: 'exact', head: true })
-      if (qCount !== null) {
-        setStats(prev => ({ ...prev, totalQuestions: String(qCount) }))
-      }
-
-      // 3. Fetch total users (profiles)
-      const { count: uCount } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true })
-      if (uCount !== null) {
-        setStats(prev => ({ ...prev, totalUsers: String(uCount) }))
-      }
-
-      // 4. Fetch total attempts
-      const { count: aCount } = await supabase
-        .from('quiz_attempts')
-        .select('*', { count: 'exact', head: true })
-      if (aCount !== null) {
-        setStats(prev => ({ ...prev, totalAttempts: String(aCount) }))
-      }
-
       setLoading(false)
     }
     fetchData()
   }, [])
 
-  // Featured stats
   const statCards = [
-    { label: 'Total Questions', value: stats.totalQuestions || '0', icon: BookOpen },
-    { label: 'Total Quizzes', value: stats.totalQuizzes || '0', icon: Calendar },
-    { label: 'Registered Users', value: stats.totalUsers || '0', icon: Users },
-    { label: 'Questions Attempted', value: stats.totalAttempts || '0', icon: Award },
+    { label: 'Total Questions', value: stats.totalQuestions, icon: BookOpen },
+    { label: 'Total Quizzes', value: stats.totalQuizzes, icon: Calendar },
+    { label: 'Registered Users', value: stats.totalUsers, icon: Users },
+    { label: 'Questions Attempted', value: stats.totalAttempts, icon: Award },
   ]
 
-  // Get the latest quiz for "Today's Quiz"
   const todayQuiz = quizzes.length > 0 ? quizzes[0] : null
   const otherQuizzes = quizzes.length > 1 ? quizzes.slice(1, 4) : []
 
@@ -92,8 +102,28 @@ export default function Home() {
 
   return (
     <div>
+      {/* Daily Updates Bar */}
+      <section className="py-3 bg-blue-50 border-b border-blue-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
+            <span className="text-gray-700">
+              📚 <strong>{quizzes.length}</strong> quizzes available
+            </span>
+            <span className="text-gray-400">•</span>
+            <span className="text-gray-700">
+              🏆 <strong>{stats.totalAttempts}</strong> attempts recorded
+            </span>
+            <span className="text-gray-400">•</span>
+            <span className="text-gray-700">
+              👥 <strong>{stats.totalUsers}</strong> users registered
+            </span>
+          </div>
+        </div>
+      </section>
+
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
+      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
@@ -116,10 +146,10 @@ export default function Home() {
                 </Link>
               )}
               <Link
-                to="/current-affairs"
+                to="/categories"
                 className="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow-md hover:bg-gray-50 transition"
               >
-                Explore Current Affairs
+                Explore Categories
               </Link>
             </div>
           </div>
@@ -143,6 +173,33 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* User Progress (only when logged in) */}
+      {user && (
+        <section className="py-8 bg-white border-t border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">🏆 Your Progress</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 rounded-xl text-center">
+                <p className="text-2xl font-bold text-yellow-600">🔥</p>
+                <p className="text-sm font-medium">5 Day Streak</p>
+              </div>
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl text-center">
+                <p className="text-2xl font-bold text-blue-600">🎯</p>
+                <p className="text-sm font-medium">12 Quizzes</p>
+              </div>
+              <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl text-center">
+                <p className="text-2xl font-bold text-green-600">⭐</p>
+                <p className="text-sm font-medium">78% Avg</p>
+              </div>
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl text-center">
+                <p className="text-2xl font-bold text-purple-600">📚</p>
+                <p className="text-sm font-medium">85 Questions</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Today's Quiz & Trending */}
       <section className="py-12 bg-gray-50">
@@ -201,11 +258,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Latest Current Affairs (Placeholder) */}
+      {/* Current Affairs (Placeholder) */}
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Latest Current Affairs</h2>
+            <h2 className="text-2xl font-bold text-gray-800">📰 Latest Current Affairs</h2>
             <Link to="/current-affairs" className="text-blue-600 hover:underline text-sm">View all →</Link>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
