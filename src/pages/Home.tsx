@@ -1,28 +1,94 @@
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabaseClient'
 import { Calendar, Users, BookOpen, Award, ArrowRight, Zap, TrendingUp, Clock } from 'lucide-react'
 
+interface Quiz {
+  id: string
+  title: string
+  description: string
+  category_id: string
+  difficulty: string
+  time_limit: number
+  questions_count: number
+  status: string
+  is_daily: boolean
+  created_at: string
+}
+
 export default function Home() {
-  // Sample stats
-  const stats = [
-    { label: 'Total Questions', value: '2,500+', icon: BookOpen },
-    { label: 'Total Quizzes', value: '120+', icon: Calendar },
-    { label: 'Registered Users', value: '4,800+', icon: Users },
-    { label: 'Questions Attempted', value: '85,000+', icon: Award },
+  const [quizzes, setQuizzes] = useState<Quiz[]>([])
+  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState({
+    totalQuestions: '0',
+    totalQuizzes: '0',
+    totalUsers: '0',
+    totalAttempts: '0'
+  })
+
+  // Fetch real data
+  useEffect(() => {
+    const fetchData = async () => {
+      // 1. Fetch published quizzes
+      const { data: quizData } = await supabase
+        .from('quizzes')
+        .select('*')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+
+      if (quizData) {
+        setQuizzes(quizData)
+        setStats(prev => ({ ...prev, totalQuizzes: String(quizData.length) }))
+      }
+
+      // 2. Fetch total questions count
+      const { count: qCount } = await supabase
+        .from('questions')
+        .select('*', { count: 'exact', head: true })
+      if (qCount !== null) {
+        setStats(prev => ({ ...prev, totalQuestions: String(qCount) }))
+      }
+
+      // 3. Fetch total users (profiles)
+      const { count: uCount } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+      if (uCount !== null) {
+        setStats(prev => ({ ...prev, totalUsers: String(uCount) }))
+      }
+
+      // 4. Fetch total attempts
+      const { count: aCount } = await supabase
+        .from('quiz_attempts')
+        .select('*', { count: 'exact', head: true })
+      if (aCount !== null) {
+        setStats(prev => ({ ...prev, totalAttempts: String(aCount) }))
+      }
+
+      setLoading(false)
+    }
+    fetchData()
+  }, [])
+
+  // Featured stats
+  const statCards = [
+    { label: 'Total Questions', value: stats.totalQuestions || '0', icon: BookOpen },
+    { label: 'Total Quizzes', value: stats.totalQuizzes || '0', icon: Calendar },
+    { label: 'Registered Users', value: stats.totalUsers || '0', icon: Users },
+    { label: 'Questions Attempted', value: stats.totalAttempts || '0', icon: Award },
   ]
 
-  // Sample featured quizzes
-  const featuredQuizzes = [
-    { id: 1, title: 'Daily Current Affairs', category: 'Current Affairs', questions: 10, time: '5 min' },
-    { id: 2, title: 'General Knowledge Mock Test', category: 'General Knowledge', questions: 25, time: '15 min' },
-    { id: 3, title: 'Indian Polity Quiz', category: 'Polity', questions: 15, time: '8 min' },
-  ]
+  // Get the latest quiz for "Today's Quiz"
+  const todayQuiz = quizzes.length > 0 ? quizzes[0] : null
+  const otherQuizzes = quizzes.length > 1 ? quizzes.slice(1, 4) : []
 
-  // Sample current affairs
-  const currentAffairs = [
-    { id: 1, title: 'India launches new space mission', date: 'Aug 18, 2026', category: 'Science' },
-    { id: 2, title: 'Tamil Nadu budget highlights', date: 'Aug 17, 2026', category: 'Tamil Nadu' },
-    { id: 3, title: 'International climate summit begins', date: 'Aug 16, 2026', category: 'International' },
-  ]
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -40,13 +106,15 @@ export default function Home() {
               Ace your competitive exams with daily quizzes, current affairs, mock tests, and more – all for free.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/daily-quiz"
-                className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
-              >
-                Start Today's Quiz
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
+              {todayQuiz && (
+                <Link
+                  to={`/quiz/${todayQuiz.id}`}
+                  className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
+                >
+                  Start Today's Quiz
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              )}
               <Link
                 to="/current-affairs"
                 className="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow-md hover:bg-gray-50 transition"
@@ -62,7 +130,7 @@ export default function Home() {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {stats.map((stat, index) => {
+            {statCards.map((stat, index) => {
               const Icon = stat.icon
               return (
                 <div key={index} className="p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition">
@@ -86,14 +154,20 @@ export default function Home() {
                 <Zap className="h-5 w-5" />
                 <span className="font-semibold">Today's Quiz</span>
               </div>
-              <h3 className="text-xl font-bold mt-2">Daily Current Affairs – Aug 18</h3>
-              <p className="text-gray-500 mt-1">10 questions • 5 minutes</p>
-              <Link
-                to="/quiz/1"
-                className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition"
-              >
-                Take Quiz →
-              </Link>
+              {todayQuiz ? (
+                <>
+                  <h3 className="text-xl font-bold mt-2">{todayQuiz.title}</h3>
+                  <p className="text-gray-500 mt-1">{todayQuiz.questions_count || 0} questions • {todayQuiz.time_limit || 5} minutes</p>
+                  <Link
+                    to={`/quiz/${todayQuiz.id}`}
+                    className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition"
+                  >
+                    Take Quiz →
+                  </Link>
+                </>
+              ) : (
+                <p className="text-gray-500 mt-2">No quizzes available yet.</p>
+              )}
             </div>
 
             {/* Trending Quizzes */}
@@ -102,28 +176,32 @@ export default function Home() {
                 <TrendingUp className="h-5 w-5" />
                 <span className="font-semibold">Trending Quizzes</span>
               </div>
-              <ul className="mt-2 space-y-3">
-                {featuredQuizzes.map((quiz) => (
-                  <li key={quiz.id} className="flex justify-between items-center border-b border-gray-100 pb-2">
-                    <div>
-                      <p className="font-medium text-gray-800">{quiz.title}</p>
-                      <p className="text-xs text-gray-400">{quiz.category} • {quiz.questions} Qs • {quiz.time}</p>
-                    </div>
-                    <Link
-                      to={`/quiz/${quiz.id}`}
-                      className="text-blue-600 text-sm font-medium hover:underline"
-                    >
-                      Start
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              {otherQuizzes.length > 0 ? (
+                <ul className="mt-2 space-y-3">
+                  {otherQuizzes.map((quiz) => (
+                    <li key={quiz.id} className="flex justify-between items-center border-b border-gray-100 pb-2">
+                      <div>
+                        <p className="font-medium text-gray-800">{quiz.title}</p>
+                        <p className="text-xs text-gray-400">{quiz.difficulty || 'Medium'} • {quiz.questions_count || 0} Qs • {quiz.time_limit || 5} min</p>
+                      </div>
+                      <Link
+                        to={`/quiz/${quiz.id}`}
+                        className="text-blue-600 text-sm font-medium hover:underline"
+                      >
+                        Start
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500 mt-2">No other quizzes available.</p>
+              )}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Latest Current Affairs */}
+      {/* Latest Current Affairs (Placeholder) */}
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-6">
@@ -131,24 +209,38 @@ export default function Home() {
             <Link to="/current-affairs" className="text-blue-600 hover:underline text-sm">View all →</Link>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            {currentAffairs.map((item) => (
-              <div key={item.id} className="bg-gray-50 rounded-lg p-5 border border-gray-100 hover:shadow-md transition">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <Clock className="h-4 w-4" />
-                  <span>{item.date}</span>
-                  <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">{item.category}</span>
-                </div>
-                <h4 className="font-semibold text-gray-800 mt-2">{item.title}</h4>
-                <Link to={`/current-affairs/${item.id}`} className="text-blue-600 text-sm hover:underline mt-2 inline-block">
-                  Read more →
-                </Link>
+            <div className="bg-gray-50 rounded-lg p-5 border border-gray-100 hover:shadow-md transition">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <Clock className="h-4 w-4" />
+                <span>Aug 19, 2026</span>
+                <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">Science</span>
               </div>
-            ))}
+              <h4 className="font-semibold text-gray-800 mt-2">India launches new space mission</h4>
+              <Link to="/current-affairs/1" className="text-blue-600 text-sm hover:underline mt-2 inline-block">Read more →</Link>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-5 border border-gray-100 hover:shadow-md transition">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <Clock className="h-4 w-4" />
+                <span>Aug 18, 2026</span>
+                <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">Tamil Nadu</span>
+              </div>
+              <h4 className="font-semibold text-gray-800 mt-2">Tamil Nadu budget highlights</h4>
+              <Link to="/current-affairs/2" className="text-blue-600 text-sm hover:underline mt-2 inline-block">Read more →</Link>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-5 border border-gray-100 hover:shadow-md transition">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <Clock className="h-4 w-4" />
+                <span>Aug 17, 2026</span>
+                <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">International</span>
+              </div>
+              <h4 className="font-semibold text-gray-800 mt-2">International climate summit begins</h4>
+              <Link to="/current-affairs/3" className="text-blue-600 text-sm hover:underline mt-2 inline-block">Read more →</Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Top Performers */}
+      {/* Top Performers (Placeholder) */}
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">🏆 Top Performers</h2>
