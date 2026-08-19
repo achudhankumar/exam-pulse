@@ -14,7 +14,6 @@ export default function Leaderboard() {
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
-      // 1. Get all completed quiz attempts with user profiles
       const { data, error } = await supabase
         .from('quiz_attempts')
         .select(`
@@ -30,7 +29,6 @@ export default function Leaderboard() {
         return
       }
 
-      // 2. Aggregate scores per user
       const userScores: Record<string, { total: number, count: number, username: string }> = {}
       data.forEach((attempt: any) => {
         const uid = attempt.user_id
@@ -45,15 +43,12 @@ export default function Leaderboard() {
         userScores[uid].count += 1
       })
 
-      // 3. Build leaderboard array
       const leaderboard = Object.entries(userScores).map(([userId, stats]) => ({
         username: stats.username,
         avg_score: Math.round(stats.total / stats.count),
         total_quizzes: stats.count,
       }))
-      // Sort by highest average score
       leaderboard.sort((a, b) => b.avg_score - a.avg_score)
-      // Add rank
       const ranked = leaderboard.map((entry, idx) => ({ ...entry, rank: idx + 1 }))
 
       setEntries(ranked)
