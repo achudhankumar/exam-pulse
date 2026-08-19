@@ -43,7 +43,7 @@ export default function Leaderboard() {
         userScores[uid].count += 1
       })
 
-      const leaderboard = Object.entries(userScores).map(([userId, stats]) => ({
+      const leaderboard = Object.entries(userScores).map(([, stats]) => ({
         username: stats.username,
         avg_score: Math.round(stats.total / stats.count),
         total_quizzes: stats.count,
