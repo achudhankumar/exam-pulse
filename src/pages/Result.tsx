@@ -53,13 +53,14 @@ export default function Result() {
         return
       }
 
+      // Fix nested array issues with safe fallbacks
       const fixedData = {
         ...data,
-        quiz: data.quiz && data.quiz[0],
+        quiz: data.quiz && data.quiz[0] ? data.quiz[0] : { title: 'Unknown Quiz' },
         user_answers: data.user_answers?.map((ua: any) => ({
           ...ua,
-          question: ua.question && ua.question[0],
-          selected_option: ua.selected_option && ua.selected_option[0]
+          question: ua.question && ua.question[0] ? ua.question[0] : { text: 'Unknown Question', explanation: '' },
+          selected_option: ua.selected_option && ua.selected_option[0] ? ua.selected_option[0] : { text: 'Not answered', letter: '?' }
         }))
       }
       setData(fixedData)
@@ -116,15 +117,19 @@ export default function Result() {
 
         <h2 className="text-xl font-semibold mb-4">Review Answers</h2>
         <div className="space-y-4">
-          {data.user_answers.map((ans, idx) => (
-            <div key={idx} className={`border-l-4 p-4 rounded ${ans.is_correct ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'}`}>
-              <p className="font-medium">{idx+1}. {ans.question.text}</p>
-              <p className="text-sm">Your answer: {ans.selected_option?.letter || 'None'} - {ans.selected_option?.text || 'Not answered'}</p>
-              {!ans.is_correct && ans.question.explanation && (
-                <p className="text-sm text-gray-600 mt-1">Explanation: {ans.question.explanation}</p>
-              )}
-            </div>
-          ))}
+          {data.user_answers && data.user_answers.length > 0 ? (
+            data.user_answers.map((ans, idx) => (
+              <div key={idx} className={`border-l-4 p-4 rounded ${ans.is_correct ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'}`}>
+                <p className="font-medium">{idx+1}. {ans.question.text}</p>
+                <p className="text-sm">Your answer: {ans.selected_option?.letter || 'None'} - {ans.selected_option?.text || 'Not answered'}</p>
+                {!ans.is_correct && ans.question.explanation && (
+                  <p className="text-sm text-gray-600 mt-1">Explanation: {ans.question.explanation}</p>
+                )}
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No answers recorded.</p>
+          )}
         </div>
 
         <div className="mt-6 flex gap-4">
