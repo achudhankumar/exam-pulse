@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import Quiz from './pages/Quiz'
 import Result from './pages/Result'
+import Leaderboard from './pages/Leaderboard'
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/quiz/:id" element={<Quiz />} />
             <Route path="/result/:attemptId" element={<Result />} />
+	<Route path="/leaderboard" element={<Leaderboard />} />
           </Routes>
         </main>
         <Footer />
