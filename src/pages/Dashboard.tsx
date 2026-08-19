@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'  // <-- add Link
 import { supabase } from '../lib/supabaseClient'
 import { BookOpen, Award, Target, Flame, Clock, TrendingUp } from 'lucide-react'
 
@@ -32,8 +32,6 @@ export default function Dashboard() {
       }
       setUser(user)
       
-      // TODO: Fetch real stats from database
-      // For now, using sample data
       setStats({
         totalQuizzes: 12,
         avgScore: 74,
@@ -102,7 +100,6 @@ export default function Dashboard() {
 
         {/* Recent Activity & Performance */}
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Recent Quiz Attempts */}
           <div className="bg-white rounded-xl shadow-sm p-5">
             <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <Clock className="h-5 w-5 text-gray-500" />
@@ -133,7 +130,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Performance by Category */}
           <div className="bg-white rounded-xl shadow-sm p-5">
             <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-gray-500" />
@@ -171,20 +167,20 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons – FIXED with Links */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3">
-          <button className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+          <Link to="/daily-quiz" className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition text-sm font-medium text-center">
             Take Daily Quiz
-          </button>
-          <button className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition text-sm font-medium">
+          </Link>
+          <Link to="/practice" className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition text-sm font-medium text-center">
             Practice Questions
-          </button>
-          <button className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition text-sm font-medium">
+          </Link>
+          <Link to="/mock-tests" className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition text-sm font-medium text-center">
             Mock Tests
-          </button>
-          <button className="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition text-sm font-medium">
+          </Link>
+          <Link to="/leaderboard" className="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition text-sm font-medium text-center">
             View Leaderboard
-          </button>
+          </Link>
         </div>
       </div>
     </div>
