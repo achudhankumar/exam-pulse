@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
-import { Clock, BookOpen, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 
 interface Quiz {
   id: string
@@ -21,11 +21,16 @@ export default function CategoryDetail() {
   useEffect(() => {
     const fetchData = async () => {
       // Fetch category
-      const { data: catData } = await supabase
+      const { data: catData, error: catError } = await supabase
         .from('categories')
         .select('*')
         .eq('slug', slug)
         .single()
+      if (catError) {
+        console.error('Error fetching category:', catError)
+        setLoading(false)
+        return
+      }
       setCategory(catData)
 
       // Fetch quizzes in this category

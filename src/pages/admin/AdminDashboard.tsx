@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabaseClient'
-import { Users, BookOpen, Award, Edit, PlusCircle, BarChart, FileText, Settings, TrendingUp, Clock } from 'lucide-react'
+import { Users, BookOpen, Award, Edit, PlusCircle, BarChart, FileText, TrendingUp } from 'lucide-react'
 
 export default function AdminDashboard() {
   const [user, setUser] = useState<any>(null)
@@ -88,7 +88,7 @@ export default function AdminDashboard() {
     { label: 'Manage Categories', path: '/admin/categories', icon: Edit, color: 'bg-blue-50 text-blue-600' },
     { label: 'Create Quiz', path: '/admin/quiz/new', icon: PlusCircle, color: 'bg-green-50 text-green-600' },
     { label: 'Manage Quizzes', path: '/admin/quizzes', icon: BookOpen, color: 'bg-purple-50 text-purple-600' },
-    { label: 'Manage Questions', path: '/admin/questions', icon: BarChart, color: 'bg-orange-50 text-orange-600' },
+    { label: 'Manage Questions', path: '/admin/quiz/:id/questions', icon: BarChart, color: 'bg-orange-50 text-orange-600' },
     { label: 'Current Affairs', path: '/admin/current-affairs', icon: FileText, color: 'bg-indigo-50 text-indigo-600' },
     { label: 'View Analytics', path: '/admin/analytics', icon: TrendingUp, color: 'bg-red-50 text-red-600' },
   ]
@@ -112,7 +112,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           {statCards.map((stat, idx) => {
             const Icon = stat.icon
@@ -132,7 +131,6 @@ export default function AdminDashboard() {
           })}
         </div>
 
-        {/* Quick Actions */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {actions.map((action, idx) => {
             const Icon = action.icon
@@ -149,7 +147,6 @@ export default function AdminDashboard() {
           })}
         </div>
 
-        {/* Recent Activity (placeholder) */}
         <div className="mt-8 bg-white rounded-xl shadow-sm p-6 border border-gray-100">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h2>
           <div className="space-y-3">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
-import { BookOpen, ChevronRight } from 'lucide-react'
+import { BookOpen } from 'lucide-react'
 
 interface Category {
   id: string
@@ -17,7 +17,6 @@ export default function Categories() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      // Fetch categories with quiz counts
       const { data, error } = await supabase
         .from('categories')
         .select(`
@@ -28,6 +27,12 @@ export default function Categories() {
           quizzes:quizzes(count)
         `)
         .order('name')
+
+      if (error) {
+        console.error('Error fetching categories:', error)
+        setLoading(false)
+        return
+      }
 
       if (data) {
         const formatted = data.map((cat: any) => ({
