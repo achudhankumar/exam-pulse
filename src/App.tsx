@@ -11,6 +11,14 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import Quiz from './pages/Quiz'
 import Result from './pages/Result'
 import Leaderboard from './pages/Leaderboard'
+import Categories from './pages/Categories'
+import CategoryDetail from './pages/CategoryDetail'
+import ManageQuizzes from './pages/admin/ManageQuizzes'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import ManageQuizzes from './pages/admin/ManageQuizzes'
+import ManageCategories from './pages/admin/ManageCategories'
+import ManageQuestions from './pages/admin/ManageQuestions'
 
 function App() {
   return (
@@ -29,6 +37,15 @@ function App() {
             <Route path="/quiz/:id" element={<Quiz />} />
             <Route path="/result/:attemptId" element={<Result />} />
 	    <Route path="/leaderboard" element={<Leaderboard />} />
+	    <Route path="/categories" element={<Categories />} />
+	    <Route path="/category/:slug" element={<CategoryDetail />} />
+	    <Route path="/admin/quizzes" element={<ManageQuizzes />} />
+	    <Route path="/admin" element={<AdminDashboard />} />
+	    <Route path="/admin" element={<AdminDashboard />} />
+	    <Route path="/admin/quizzes" element={<ManageQuizzes />} />
+	    <Route path="/admin/categories" element={<ManageCategories />} />
+	    <Route path="/admin/quiz/:quizId/questions" element={<ManageQuestions />} />
+
           </Routes>
         </main>
         <Footer />
@@ -38,3 +55,6 @@ function App() {
 }
 
 export default App
+
+
+<Route path="/categories" element={<Categories />} />
