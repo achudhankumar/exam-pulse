@@ -1,75 +1,80 @@
-# React + TypeScript + Vite
+# ExamPulse
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### Current Affairs & Interactive Quiz Platform
 
-Currently, two official plugins are available:
+ExamPulse is a web-based platform designed to provide an interactive way to explore **current affairs, multiple-choice questions, and examination-oriented content**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The project focuses on presenting educational content through a clean, structured, and user-friendly quiz experience.
 
-## React Compiler
+## Overview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+ExamPulse was developed as a practical software project focused on building an interactive learning and examination-preparation experience.
 
-## Expanding the ESLint configuration
+The platform is designed around:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* Current-affairs content
+* Multiple-choice questions
+* Interactive quiz experiences
+* Structured educational information
+* User-friendly presentation of questions and answers
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Key Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+* Interactive quiz-based learning experience
+* Multiple-choice question format
+* Organized current-affairs content
+* Structured question and answer presentation
+* Responsive and user-focused interface
+* Designed for examination and competitive-exam preparation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Project Goals
 
-```
+The main goals of ExamPulse are to:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+1. Make current-affairs learning more interactive.
+2. Provide an organized way to practice examination-oriented questions.
+3. Present questions and answers in a simple and accessible format.
+4. Create a foundation that can be extended with additional educational features.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Technical Focus
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+This project demonstrates practical experience with:
 
-```
+* Web application development
+* Frontend interface development
+* Interactive user experiences
+* Structured content management
+* Problem solving and feature implementation
+* Iterative development using Git
+
+## Development
+
+ExamPulse was developed iteratively, with features and improvements added throughout the development process.
+
+The repository demonstrates hands-on development activity and version-control usage through Git.
+
+## Future Improvements
+
+Potential improvements include:
+
+* User accounts and personalized progress tracking
+* Question difficulty levels
+* Category-based quizzes
+* Timed examinations
+* Performance analytics
+* Leaderboards
+* Expanded current-affairs database
+* Automated question generation and content assistance
+
+## Project Status
+
+**Active Development**
+
+The project can be further expanded into a more complete examination and learning platform.
+
+## Author
+
+**Achudhan R.K.**
+
+Information Science Engineering
+Software Development | Python | JavaScript | React | Machine Learning | Computer Vision
